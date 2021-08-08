@@ -1,17 +1,19 @@
+//Imports
 var express = require('express');
 var logger = require('morgan');
 const mongoose = require('mongoose');
-
 var userRouter = require('./Routes/users.routes');
+const config = require('./config.json');
 
+
+//Initializing express 
 var app = express();
-
 app.use(logger('dev'));
 app.use(express.urlencoded({extended: true}));
 app.use(express.json())
 
-// const dbURI = process.env.dbURI;
-const dbURI = `mongodb+srv://root:root@cluster0.hjhlx.mongodb.net/Hala?retryWrites=true&w=majority`;
+//Initializing mongoose
+const dbURI = config.connectionString;
 mongoose
 	.connect(dbURI, {
 		useNewUrlParser: true,
@@ -20,9 +22,9 @@ mongoose
 	})
 	.then(() => console.log("Database Connected"))
 	.catch((err) => console.log(err));
-
 mongoose.Promise = global.Promise;
 
+//express routes
 app.use('/users', userRouter);
 
 // catch 404 and forward to error handler

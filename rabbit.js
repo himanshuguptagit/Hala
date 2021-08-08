@@ -31,11 +31,8 @@ module.exports.consume = (queueName) => {
             durable: true
           });
     
-        _Channel.consume(queueName, function(msg) {
-            resolve({channel: _Channel, msg: msg});
+        let y = _Channel.consume(queueName, function(msg) {
+            resolve({tag: this, channel: _Channel, msg: msg});
         }, {noAck: false});
     });
-
-
-
 }

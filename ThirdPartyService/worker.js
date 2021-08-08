@@ -21,20 +21,21 @@ amqp.connect('amqp://localhost', function(error0, connection) {
     channel.prefetch(1);
     console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", queue);
     channel.consume(queue, function(msg) {
-      var secs = msg.content.toString().split('.').length - 1;
+      
+      let id = msg.content.toString();
+      console.log(`Received ${id}`);
 
-      console.log(" [x] Received %s", msg.content.toString());
-
+      //Logic
       let val = 'false';
       if(Math.floor(Math.random() * 100) % 2 === 0){
         val = 'true';
       }
-      //Publish to queue
-      publish('validation_out_queue', val);
+
+      //Publish to new queue
+      publish(`validation_${id}`, val);
       channel.ack(msg);
+
     }, {
-      // manual acknowledgment mode,
-      // see ../confirms.html for details
       noAck: false
     });
   });
@@ -43,7 +44,7 @@ amqp.connect('amqp://localhost', function(error0, connection) {
 
 const publish = async (queueName, data) => {
   _Channel.assertQueue(queueName, {
-    durable: true
+    durable: true,
   });
   _Channel.sendToQueue(queueName, Buffer.from(data));
 }
